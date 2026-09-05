@@ -3,6 +3,14 @@
 GA4 property: **Flowfocus - personal portfolio** (`523864840`), web stream
 `15724824130`, measurement ID `G-K16YW9ZKBM`. This ID is public.
 
+Configured on 2026-09-05: `focus_complete` and `focus_qualified` are GA4 key
+events, counted per event with no default monetary value. The property is linked
+to Google Ads account `642-561-6401`, with auto-tagging enabled, personalized
+advertising disabled, and extra Analytics editing access from Ads disabled.
+No campaigns or bidding goals were created or changed. Importing key events as
+Google Ads conversion actions is a separate step when preparing the campaign.
+Production receipt remains to be verified after this PR is merged and deployed.
+
 Only the production domain loads GA4. Preview/local builds do not send events.
 Enhanced measurement is disabled; the tag supplies a standard page view, and the
 app supplies the explicit events below. Task names, task IDs and the dynamic tab
