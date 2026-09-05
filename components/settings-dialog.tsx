@@ -1,5 +1,7 @@
 "use client"
 
+import { useLocale } from "@/components/locale-provider"
+
 import { useState } from "react"
 import { Settings, X, RotateCcw } from "lucide-react"
 import type { PomodoroSettings } from "@/lib/pomodoro-types"
@@ -11,6 +13,7 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProps) {
+  const { t } = useLocale()
   const [open, setOpen] = useState(false)
   const [local, setLocal] = useState<PomodoroSettings>(settings)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
@@ -45,7 +48,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
       <button
         onClick={handleOpen}
         className="p-2 rounded-md text-[hsl(0_0%_100%/0.7)] hover:text-[hsl(0_0%_100%)] hover:bg-[hsl(0_0%_0%/0.08)] transition-colors"
-        aria-label="Settings"
+        aria-label={t("Settings")}
       >
         <Settings className="w-5 h-5" />
       </button>
@@ -59,11 +62,11 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
 
           <div className="relative bg-[hsl(0_0%_100%)] text-[hsl(0_0%_20%)] rounded-xl shadow-2xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-[hsl(0_0%_20%)]">Timer Settings</h2>
+              <h2 className="text-lg font-bold text-[hsl(0_0%_20%)]">{t("Timer Settings")}</h2>
               <button
                 onClick={() => setOpen(false)}
                 className="p-1 rounded hover:bg-[hsl(0_0%_0%/0.05)] text-[hsl(0_0%_40%)]"
-                aria-label="Close settings"
+                aria-label={t("Close settings")}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -73,12 +76,12 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
               {/* Timer durations */}
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-[hsl(0_0%_50%)]">
-                  Time (minutes)
+                  {t("Time (minutes)")}
                 </label>
                 <div className="grid grid-cols-3 gap-3 mt-2">
                   <div>
                     <label className="text-xs text-[hsl(0_0%_50%)] mb-1 block">
-                      Pomodoro
+                      {t("Pomodoro")}
                     </label>
                     <input
                       type="number"
@@ -93,7 +96,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                   </div>
                   <div>
                     <label className="text-xs text-[hsl(0_0%_50%)] mb-1 block">
-                      Short Break
+                      {t("Short Break")}
                     </label>
                     <input
                       type="number"
@@ -111,7 +114,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                   </div>
                   <div>
                     <label className="text-xs text-[hsl(0_0%_50%)] mb-1 block">
-                      Long Break
+                      {t("Long Break")}
                     </label>
                     <input
                       type="number"
@@ -133,7 +136,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
               {/* Long break interval */}
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-[hsl(0_0%_50%)]">
-                  Long Break Interval
+                  {t("Long Break Interval")}
                 </label>
                 <input
                   type="number"
@@ -149,14 +152,14 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                   className="w-full mt-2 px-3 py-2 rounded-md bg-[hsl(0_0%_95%)] text-[hsl(0_0%_20%)] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(0_65%_71%/0.5)]"
                 />
                 <p className="text-xs text-[hsl(0_0%_60%)] mt-1">
-                  Long break after every N pomodoros
+                  {t("Long break after every N pomodoros")}
                 </p>
               </div>
 
               {/* Day start hour */}
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-[hsl(0_0%_50%)]">
-                  Day Start Hour
+                  {t("Day Start Hour")}
                 </label>
                 <select
                   value={local.dayStartHour}
@@ -169,9 +172,9 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                     <option key={h} value={h}>
                       {String(h).padStart(2, "0")}:00{" "}
                       {h === 0
-                        ? "(midnight)"
+                        ? t("(midnight)")
                         : h === 12
-                          ? "(noon)"
+                          ? t("(noon)")
                           : h < 12
                             ? "AM"
                             : "PM"}
@@ -179,7 +182,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                   ))}
                 </select>
                 <p className="text-xs text-[hsl(0_0%_60%)] mt-1">
-                  When does your day start for the focus chart?
+                  {t("When does your day start for the focus chart?")}
                 </p>
               </div>
 
@@ -188,20 +191,20 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                 {showResetConfirm ? (
                   <div className="bg-[hsl(0_90%_97%)] rounded-lg p-3">
                     <p className="text-sm text-[hsl(0_60%_45%)] mb-2">
-                      This will clear all tasks, settings, and focus history. Are you sure?
+                      {t("This will clear all tasks, settings, and focus history. Are you sure?")}
                     </p>
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => setShowResetConfirm(false)}
                         className="px-3 py-1.5 text-sm text-[hsl(0_0%_50%)] hover:text-[hsl(0_0%_30%)]"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         onClick={handleResetAll}
                         className="px-3 py-1.5 text-sm bg-[hsl(0_60%_55%)] text-[hsl(0_0%_100%)] rounded-md font-medium hover:bg-[hsl(0_60%_48%)]"
                       >
-                        Yes, Reset Everything
+                        {t("Yes, Reset Everything")}
                       </button>
                     </div>
                   </div>
@@ -211,7 +214,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                     className="flex items-center gap-2 text-sm text-[hsl(0_0%_55%)] hover:text-[hsl(0_60%_50%)] transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    Reset All Data
+                    {t("Reset All Data")}
                   </button>
                 )}
               </div>
@@ -222,7 +225,7 @@ export function SettingsDialog({ settings, onSave, onReset }: SettingsDialogProp
                 onClick={handleSave}
                 className="px-6 py-2 bg-[hsl(0_65%_71%)] text-[hsl(0_0%_100%)] rounded-md font-medium hover:bg-[hsl(0_65%_63%)] transition-colors"
               >
-                Save
+                {t("Save")}
               </button>
             </div>
           </div>
