@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useCallback, useState } from "react"
 import type { TimerMode, PomodoroSettings } from "@/lib/pomodoro-types"
+import { createFocusTracker } from "@/lib/focus-tracking"
+import { initializeAnalytics, trackFocus } from "@/lib/analytics"
 
 interface PomodoroTimerProps {
   mode: TimerMode
@@ -75,6 +77,16 @@ export function PomodoroTimer({
 }: PomodoroTimerProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const hasNotifiedRef = useRef(false)
+  const analyticsRef = useRef<ReturnType<typeof createFocusTracker> | null>(null)
+  const previousElapsedRef = useRef(0)
+  const getTracker = () => {
+    if (!analyticsRef.current) {
+      let storage: Storage | undefined
+      try { storage = window.localStorage } catch {}
+      analyticsRef.current = createFocusTracker(trackFocus, storage)
+    }
+    return analyticsRef.current
+  }
 
   // Smooth ring: we track a floating-point progress that animates toward the target
   const [smoothProgress, setSmoothProgress] = useState(0)
@@ -96,6 +108,14 @@ export function PomodoroTimer({
   // Compute target progress from elapsed
   const limitSeconds = getLimitSeconds()
   const rawProgress = Math.min(elapsedSeconds / limitSeconds, 1)
+
+  useEffect(() => {
+    if (mode === "pomodoro" && isRunning) {
+      analyticsRef.current?.progress(elapsedSeconds, limitSeconds)
+    }
+    if (elapsedSeconds === 0 && previousElapsedRef.current > 0 && !isRunning) analyticsRef.current?.reset()
+    previousElapsedRef.current = elapsedSeconds
+  }, [elapsedSeconds, limitSeconds, isRunning, mode])
 
   useEffect(() => {
     targetRef.current = rawProgress
@@ -223,10 +243,12 @@ export function PomodoroTimer({
   }, [elapsedSeconds, mode, limitSeconds, activeTaskName, isRunning])
 
   const handleStartStop = () => {
+    if (!isRunning && mode === "pomodoro" && initializeAnalytics()) getTracker().start(limitSeconds)
     setIsRunning(!isRunning)
   }
 
   const handleStop = () => {
+    if (mode === "pomodoro") analyticsRef.current?.end(elapsedSeconds, limitSeconds, "stop")
     setIsRunning(false)
     const isComplete = elapsedSeconds >= getLimitSeconds()
 
@@ -252,6 +274,7 @@ export function PomodoroTimer({
       )
       if (!confirmed) return
     }
+    if (mode === "pomodoro") analyticsRef.current?.end(elapsedSeconds, limitSeconds, "switch")
     setIsRunning(false)
     setElapsedSeconds(() => 0)
     hasNotifiedRef.current = false
