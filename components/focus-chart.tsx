@@ -1,5 +1,7 @@
 "use client"
 
+import { useLocale } from "@/components/locale-provider"
+
 import {
   Bar,
   BarChart,
@@ -24,6 +26,7 @@ function formatMinutes(totalSeconds: number) {
 }
 
 export function FocusChart({ focusLog }: FocusChartProps) {
+  const { t, locale } = useLocale()
   const last14 = focusLog.slice(-14)
 
   if (last14.length === 0) {
@@ -31,12 +34,12 @@ export function FocusChart({ focusLog }: FocusChartProps) {
       <div className="w-full max-w-lg mx-auto mt-8">
         <div className="border-b border-[hsl(0_0%_100%/0.2)] pb-3 mb-4">
           <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">
-            Focus Time
+            {t("Focus Time")}
           </h2>
         </div>
         <div className="bg-[hsl(0_0%_100%/0.08)] rounded-lg p-8 text-center">
           <p className="text-sm text-[hsl(0_0%_100%/0.5)]">
-            No focus data yet. Complete a pomodoro to start tracking.
+            {t("No focus data yet. Complete a pomodoro to start tracking.")}
           </p>
         </div>
       </div>
@@ -45,7 +48,7 @@ export function FocusChart({ focusLog }: FocusChartProps) {
 
   const chartData = last14.map((entry) => {
     const parts = entry.date.split("-")
-    const shortDate = `${parts[1]}/${parts[2]}`
+    const shortDate = new Intl.DateTimeFormat(locale, { month: "2-digit", day: "2-digit" }).format(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])))
     return {
       date: shortDate,
       fullDate: entry.date,
@@ -62,28 +65,28 @@ export function FocusChart({ focusLog }: FocusChartProps) {
     <div className="w-full max-w-lg mx-auto mt-8">
       <div className="border-b border-[hsl(0_0%_100%/0.2)] pb-3 mb-4">
         <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">
-          Focus Time
+          {t("Focus Time")}
         </h2>
       </div>
 
       {/* Stats */}
       <div className="flex gap-4 mb-4">
         <div className="flex-1 bg-[hsl(0_0%_100%/0.08)] rounded-lg px-4 py-3">
-          <p className="text-xs text-[hsl(0_0%_100%/0.5)] mb-0.5">Total</p>
+          <p className="text-xs text-[hsl(0_0%_100%/0.5)] mb-0.5">{t("Total")}</p>
           <p className="text-sm font-semibold text-[hsl(0_0%_100%)]">
             {formatMinutes(totalSeconds)}
           </p>
         </div>
         <div className="flex-1 bg-[hsl(0_0%_100%/0.08)] rounded-lg px-4 py-3">
           <p className="text-xs text-[hsl(0_0%_100%/0.5)] mb-0.5">
-            Daily Avg
+            {t("Daily Avg")}
           </p>
           <p className="text-sm font-semibold text-[hsl(0_0%_100%)]">
             {formatMinutes(avgSeconds)}
           </p>
         </div>
         <div className="flex-1 bg-[hsl(0_0%_100%/0.08)] rounded-lg px-4 py-3">
-          <p className="text-xs text-[hsl(0_0%_100%/0.5)] mb-0.5">Days</p>
+          <p className="text-xs text-[hsl(0_0%_100%/0.5)] mb-0.5">{t("Days")}</p>
           <p className="text-sm font-semibold text-[hsl(0_0%_100%)]">
             {last14.length}
           </p>
@@ -95,7 +98,7 @@ export function FocusChart({ focusLog }: FocusChartProps) {
         <ChartContainer
           config={{
             minutes: {
-              label: "Focus (min)",
+              label: t("Focus (min)"),
               color: "hsla(0,0%,100%,0.6)",
             },
           }}
@@ -133,7 +136,7 @@ export function FocusChart({ focusLog }: FocusChartProps) {
                   color: "white",
                 }}
                 labelStyle={{ color: "hsla(0,0%,100%,0.9)" }}
-                formatter={(value: number) => [`${value} min`, "Focus"]}
+                formatter={(value: number) => [`${value} min`, t("Focus")]}
               />
               <Bar
                 dataKey="minutes"

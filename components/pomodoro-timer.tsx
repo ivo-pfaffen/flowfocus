@@ -1,6 +1,9 @@
 "use client"
 
+import { useLocale } from "@/components/locale-provider"
+
 import { useEffect, useRef, useCallback, useState } from "react"
+import type { Translate } from "@/lib/i18n"
 import type { TimerMode, PomodoroSettings } from "@/lib/pomodoro-types"
 
 interface PomodoroTimerProps {
@@ -29,15 +32,16 @@ function formatTabTitle(
   totalSeconds: number,
   limitSeconds: number,
   mode: TimerMode,
+  t: Translate,
   taskName?: string
 ) {
   const remaining = limitSeconds - totalSeconds
   const modeLabel =
     mode === "pomodoro"
-      ? taskName || "Focus"
+      ? taskName || t("Focus")
       : mode === "shortBreak"
-        ? "Break"
-        : "Long Break"
+        ? t("Break")
+        : t("Long Break")
 
   if (remaining >= 0) {
     const minutes = Math.floor(remaining / 60)
@@ -50,14 +54,14 @@ function formatTabTitle(
   return `+${String(overMinutes).padStart(2, "0")}:${String(overSecs).padStart(2, "0")} - ${modeLabel}`
 }
 
-function getModeLabel(mode: TimerMode) {
+function getModeLabel(mode: TimerMode, t: Translate) {
   switch (mode) {
     case "pomodoro":
-      return "Time to focus!"
+      return t("Time to focus!")
     case "shortBreak":
-      return "Time for a break!"
+      return t("Time for a break!")
     case "longBreak":
-      return "Time for a long break!"
+      return t("Time for a long break!")
   }
 }
 
@@ -73,6 +77,7 @@ export function PomodoroTimer({
   pomodorosCompleted,
   activeTaskName,
 }: PomodoroTimerProps) {
+  const { t } = useLocale()
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const hasNotifiedRef = useRef(false)
 
@@ -208,20 +213,6 @@ export function PomodoroTimer({
     }
   }, [isRunning, setElapsedSeconds])
 
-  // Update document title with time
-  useEffect(() => {
-    if (isRunning || elapsedSeconds > 0) {
-      document.title = formatTabTitle(
-        elapsedSeconds,
-        limitSeconds,
-        mode,
-        activeTaskName
-      )
-    } else {
-      document.title = "Flowfocus - Pomodoro Timer"
-    }
-  }, [elapsedSeconds, mode, limitSeconds, activeTaskName, isRunning])
-
   const handleStartStop = () => {
     setIsRunning(!isRunning)
   }
@@ -248,7 +239,7 @@ export function PomodoroTimer({
   const handleModeSwitch = (newMode: TimerMode) => {
     if (isRunning) {
       const confirmed = window.confirm(
-        "The timer is still running. Are you sure you want to switch?"
+        t("The timer is still running. Are you sure you want to switch?")
       )
       if (!confirmed) return
     }
@@ -268,6 +259,9 @@ export function PomodoroTimer({
 
   return (
     <div className="flex flex-col items-center">
+      <title>{isRunning || elapsedSeconds > 0
+        ? formatTabTitle(elapsedSeconds, limitSeconds, mode, t, activeTaskName)
+        : t("Flowfocus - Pomodoro Timer")}</title>
       {/* Mode tabs */}
       <div className="flex gap-1 mb-6">
         {(["pomodoro", "shortBreak", "longBreak"] as TimerMode[]).map((m) => (
@@ -282,8 +276,8 @@ export function PomodoroTimer({
             {m === "pomodoro"
               ? "Pomodoro"
               : m === "shortBreak"
-                ? "Short Break"
-                : "Long Break"}
+                ? t("Short Break")
+                : t("Long Break")}
           </button>
         ))}
       </div>
@@ -328,7 +322,7 @@ export function PomodoroTimer({
             {formatTime(elapsedSeconds, limitSeconds)}
           </span>
           <span className="text-xs text-[hsl(0_0%_100%/0.6)] mt-1">
-            {getModeLabel(mode)}
+            {getModeLabel(mode, t)}
           </span>
         </div>
       </div>
@@ -339,14 +333,14 @@ export function PomodoroTimer({
           onClick={handleStartStop}
           className="px-10 py-3 rounded-lg text-base font-bold uppercase tracking-wider transition-all active:translate-y-0.5 bg-[hsl(0_0%_100%)] text-[hsl(0_0%_25%)] shadow-lg hover:shadow-xl"
         >
-          {isRunning ? "Pause" : "Start"}
+          {isRunning ? t("Pause") : t("Start")}
         </button>
         {(isRunning || elapsedSeconds > 0) && (
           <button
             onClick={handleStop}
             className="px-5 py-3 rounded-lg text-base font-bold uppercase tracking-wider transition-all active:translate-y-0.5 bg-[hsl(0_0%_100%/0.2)] text-[hsl(0_0%_100%)] hover:bg-[hsl(0_0%_100%/0.3)]"
           >
-            Stop
+            {t("Stop")}
           </button>
         )}
       </div>

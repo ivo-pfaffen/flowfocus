@@ -1,5 +1,7 @@
 "use client"
 
+import { useLocale } from "@/components/locale-provider"
+
 import { useMemo, useEffect, useState, useRef } from "react"
 
 interface PomodoroForestProps {
@@ -422,6 +424,7 @@ function Flower({ x, y, seed }: { x: number; y: number; seed: number }) {
 // ─── Main Forest Component ───────────────────────────────
 
 export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
+  const { t } = useLocale()
   const svgWidth = 420
   const groundY = 130
   const totalHeight = 175
@@ -599,12 +602,12 @@ export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
     return (
       <div className="w-full max-w-lg mx-auto mt-8">
         <div className="border-b border-[hsl(0_0%_100%/0.2)] pb-3 mb-4">
-          <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">Focus Forest</h2>
+          <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">{t("Focus Forest")}</h2>
         </div>
         <div className="rounded-xl overflow-hidden">
           {renderScene}
           <div className="bg-[hsl(0_0%_0%/0.15)] px-4 py-3 text-center">
-            <p className="text-sm text-[hsl(0_0%_100%/0.6)]">Complete a pomodoro to plant your first tree!</p>
+            <p className="text-sm text-[hsl(0_0%_100%/0.6)]">{t("Complete a pomodoro to plant your first tree!")}</p>
           </div>
         </div>
       </div>
@@ -614,9 +617,9 @@ export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
   return (
     <div className="w-full max-w-lg mx-auto mt-8">
       <div className="flex items-center justify-between border-b border-[hsl(0_0%_100%/0.2)] pb-3 mb-4">
-        <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">Focus Forest</h2>
+        <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">{t("Focus Forest")}</h2>
         <span className="text-xs text-[hsl(0_0%_100%/0.5)]">
-          {pomodorosCompleted} {pomodorosCompleted === 1 ? "tree" : "trees"}
+          {pomodorosCompleted} {pomodorosCompleted === 1 ? t("tree") : t("trees")}
         </span>
       </div>
       <div className="rounded-xl overflow-hidden shadow-inner">

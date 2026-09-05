@@ -1,5 +1,7 @@
 "use client"
 
+import { useLocale } from "@/components/locale-provider"
+
 import React from "react"
 import { useState } from "react"
 import {
@@ -35,6 +37,7 @@ export function TaskList({
   activeTaskId,
   setActiveTaskId,
 }: TaskListProps) {
+  const { t } = useLocale()
   const [showAddForm, setShowAddForm] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newEstimated, setNewEstimated] = useState(1)
@@ -171,13 +174,13 @@ export function TaskList({
     <div className="w-full max-w-lg mx-auto mt-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-[hsl(0_0%_100%/0.2)]">
-        <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">Tasks</h2>
+        <h2 className="text-lg font-bold text-[hsl(0_0%_100%)]">{t("Tasks")}</h2>
         {tasks.some((t) => t.done) && (
           <button
             onClick={clearDone}
             className="text-xs text-[hsl(0_0%_100%/0.6)] hover:text-[hsl(0_0%_100%)] transition-colors"
           >
-            Clear done
+            {t("Clear done")}
           </button>
         )}
       </div>
@@ -185,7 +188,7 @@ export function TaskList({
       {/* Active task indicator */}
       {activeTaskId && (
         <div className="mb-3 px-3 py-2 rounded-md bg-[hsl(0_0%_0%/0.08)] text-sm text-[hsl(0_0%_100%/0.8)]">
-          Working on:{" "}
+          {t("Working on:")}{" "}
           <span className="font-semibold text-[hsl(0_0%_100%)]">
             {tasks.find((t) => t.id === activeTaskId)?.title}
           </span>
@@ -209,7 +212,7 @@ export function TaskList({
                 />
                 <div className="flex items-center gap-3 mb-3">
                   <label className="text-xs text-[hsl(0_0%_50%)]">
-                    Est. Pomodoros:
+                    {t("Est. Pomodoros:")}
                   </label>
                   <div className="flex items-center gap-1">
                     <button
@@ -236,13 +239,13 @@ export function TaskList({
                     onClick={() => setEditingId(null)}
                     className="px-4 py-1.5 text-sm text-[hsl(0_0%_50%)] hover:text-[hsl(0_0%_30%)]"
                   >
-                    Cancel
+                    {t("Cancel")}
                   </button>
                   <button
                     onClick={() => handleSaveEdit(task.id)}
                     className="px-4 py-1.5 text-sm bg-[rgb(175,77,77)] text-[hsl(0_0%_100%)] rounded-md font-medium hover:opacity-90"
                   >
-                    Save
+                    {t("Save")}
                   </button>
                 </div>
               </div>
@@ -260,7 +263,7 @@ export function TaskList({
                   <button
                     onClick={(e) => handleToggleExpand(task.id, e)}
                     className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[hsl(0_0%_100%/0.5)] hover:text-[hsl(0_0%_100%)] transition-colors"
-                    aria-label="Toggle subtasks"
+                    aria-label={t("Toggle subtasks")}
                   >
                     <ChevronRight
                       className={`w-4 h-4 transition-transform ${expandedTaskId === task.id ? "rotate-90" : ""}`}
@@ -299,7 +302,7 @@ export function TaskList({
                         )
                       }}
                       className="p-1.5 rounded opacity-0 group-hover:opacity-100 hover:bg-[hsl(0_0%_100%/0.1)] transition-all text-[hsl(0_0%_100%/0.6)]"
-                      aria-label="Task options"
+                      aria-label={t("Task options")}
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
@@ -318,7 +321,7 @@ export function TaskList({
                             }}
                             className="w-full px-3 py-2 text-left text-sm hover:bg-[hsl(0_0%_95%)] text-[hsl(0_0%_20%)]"
                           >
-                            Edit
+                            {t("Edit")}
                           </button>
                           <button
                             onClick={(e) => {
@@ -327,7 +330,7 @@ export function TaskList({
                             }}
                             className="w-full px-3 py-2 text-left text-sm hover:bg-[hsl(0_0%_95%)] flex items-center gap-2 text-[hsl(0_0%_20%)]"
                           >
-                            <ChevronUp className="w-3 h-3" /> Move up
+                            <ChevronUp className="w-3 h-3" /> {t("Move up")}
                           </button>
                           <button
                             onClick={(e) => {
@@ -336,7 +339,7 @@ export function TaskList({
                             }}
                             className="w-full px-3 py-2 text-left text-sm hover:bg-[hsl(0_0%_95%)] flex items-center gap-2 text-[hsl(0_0%_20%)]"
                           >
-                            <ChevronDown className="w-3 h-3" /> Move down
+                            <ChevronDown className="w-3 h-3" /> {t("Move down")}
                           </button>
                           <button
                             onClick={(e) => {
@@ -346,7 +349,7 @@ export function TaskList({
                             className="w-full px-3 py-2 text-left text-sm text-[hsl(0_55%_50%)] hover:bg-[hsl(0_80%_97%)]"
                           >
                             <span className="flex items-center gap-2">
-                              <Trash2 className="w-3 h-3" /> Delete
+                              <Trash2 className="w-3 h-3" /> {t("Delete")}
                             </span>
                           </button>
                         </div>
@@ -374,8 +377,8 @@ export function TaskList({
                           }`}
                           aria-label={
                             subtask.done
-                              ? "Mark subtask incomplete"
-                              : "Mark subtask complete"
+                              ? t("Mark subtask incomplete")
+                              : t("Mark subtask complete")
                           }
                         >
                           {subtask.done && (
@@ -392,7 +395,7 @@ export function TaskList({
                             handleDeleteSubtask(task.id, subtask.id)
                           }
                           className="opacity-0 group-hover/sub:opacity-100 p-1 rounded hover:bg-[hsl(0_0%_100%/0.1)] text-[hsl(0_0%_100%/0.4)] hover:text-[hsl(0_0%_100%/0.8)] transition-all"
-                          aria-label="Delete subtask"
+                          aria-label={t("Delete subtask")}
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -404,7 +407,7 @@ export function TaskList({
                       <div className="flex items-center gap-2 px-3 py-1.5">
                         <input
                           type="text"
-                          placeholder="Subtask title..."
+                          placeholder={t("Subtask title...")}
                           value={newSubtaskTitle}
                           onChange={(e) => setNewSubtaskTitle(e.target.value)}
                           autoFocus
@@ -422,7 +425,7 @@ export function TaskList({
                           onClick={() => handleAddSubtask(task.id)}
                           className="px-3 py-1.5 text-xs font-medium bg-[hsl(0_0%_100%/0.2)] text-[hsl(0_0%_100%)] rounded hover:bg-[hsl(0_0%_100%/0.3)]"
                         >
-                          Add
+                          {t("Add")}
                         </button>
                         <button
                           onClick={() => {
@@ -431,7 +434,7 @@ export function TaskList({
                           }}
                           className="px-2 py-1.5 text-xs text-[hsl(0_0%_100%/0.5)] hover:text-[hsl(0_0%_100%)]"
                         >
-                          Cancel
+                          {t("Cancel")}
                         </button>
                       </div>
                     ) : (
@@ -443,7 +446,7 @@ export function TaskList({
                         className="flex items-center gap-2 px-3 py-2 text-xs text-[hsl(0_0%_100%/0.5)] hover:text-[hsl(0_0%_100%/0.8)] transition-colors"
                       >
                         <Plus className="w-3 h-3" />
-                        Add subtask
+                        {t("Add subtask")}
                       </button>
                     )}
                   </div>
@@ -459,7 +462,7 @@ export function TaskList({
         <div className="mt-3 bg-[hsl(0_0%_100%)] rounded-lg p-4 text-[hsl(0_0%_20%)]">
           <input
             type="text"
-            placeholder="What are you working on?"
+            placeholder={t("What are you working on?")}
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             autoFocus
@@ -468,7 +471,7 @@ export function TaskList({
           />
           <div className="flex items-center gap-3 mb-3">
             <label className="text-xs text-[hsl(0_0%_50%)]">
-              Est. Pomodoros:
+              {t("Est. Pomodoros:")}
             </label>
             <div className="flex items-center gap-1">
               <button
@@ -497,14 +500,14 @@ export function TaskList({
               }}
               className="px-4 py-1.5 text-sm text-[hsl(0_0%_50%)] hover:text-[hsl(0_0%_30%)]"
             >
-              Cancel
+              {t("Cancel")}
             </button>
             <button
               onClick={handleAddTask}
               className="px-4 py-1.5 text-sm bg-[rgb(175,77,77)] text-[hsl(0_0%_100%)] rounded-md font-medium hover:opacity-90 disabled:opacity-50"
               disabled={!newTitle.trim()}
             >
-              Save
+              {t("Save")}
             </button>
           </div>
         </div>
@@ -514,7 +517,7 @@ export function TaskList({
           className="mt-3 w-full py-3 rounded-lg border-2 border-dashed border-[hsl(0_0%_100%/0.25)] text-[hsl(0_0%_100%/0.6)] hover:border-[hsl(0_0%_100%/0.4)] hover:text-[hsl(0_0%_100%)] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
-          Add Task
+          {t("Add Task")}
         </button>
       )}
 

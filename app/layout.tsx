@@ -9,7 +9,6 @@ const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Flowfocus - Pomodoro Timer',
   description: 'A customizable Pomodoro timer with task tracking. Focus better with timed but flexible work sessions and breaks.',
 }
 

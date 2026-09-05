@@ -1,5 +1,6 @@
 "use client"
 
+import { LocaleProvider, useLocale } from "@/components/locale-provider"
 import { useState, useCallback, useEffect, useRef } from "react"
 import { PomodoroTimer } from "@/components/pomodoro-timer"
 import { SettingsDialog } from "@/components/settings-dialog"
@@ -41,6 +42,11 @@ function getModeClass(mode: TimerMode) {
 }
 
 export default function PomodoroPage() {
+  return <LocaleProvider><PomodoroContent /></LocaleProvider>
+}
+
+function PomodoroContent() {
+  const { t } = useLocale()
   const [hydrated, setHydrated] = useState(false)
   const [mode, setMode] = useState<TimerMode>("pomodoro")
   const [isRunning, setIsRunning] = useState(false)
@@ -163,6 +169,7 @@ export default function PomodoroPage() {
   if (!hydrated) {
     return (
       <div className="min-h-screen mode-pomodoro flex items-center justify-center">
+        <title>{t("Flowfocus - Pomodoro Timer")}</title>
         <div className="w-8 h-8 border-2 border-[hsl(0_0%_100%/0.3)] border-t-[hsl(0_0%_100%)] rounded-full animate-spin" />
       </div>
     )
@@ -205,7 +212,7 @@ export default function PomodoroPage() {
 
         {/* Session counter */}
         <div className="text-center mt-3 text-sm text-[hsl(0_0%_100%/0.5)]">
-          #{pomodorosCompleted + 1} session
+          #{pomodorosCompleted + 1} {t("session")}
         </div>
 
         {/* Task list */}
