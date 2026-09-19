@@ -234,7 +234,7 @@ function PomodoroContent() {
         />
 
         {/* Forest */}
-        <PomodoroForest pomodorosCompleted={pomodorosCompleted} />
+        <PomodoroForest pomodorosCompleted={pomodorosCompleted} tasks={tasks} />
 
         {/* Focus chart */}
         <FocusChart focusLog={focusLog} />

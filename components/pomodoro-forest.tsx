@@ -3,10 +3,15 @@
 import { useLocale } from "@/components/locale-provider"
 
 import { useMemo, useEffect, useState, useRef } from "react"
+import type { Task } from "@/lib/pomodoro-types"
 
 interface PomodoroForestProps {
   pomodorosCompleted: number
+  tasks: Task[]
 }
+
+// A task deserves a big tree once it has this many pomodoros on it.
+const BIG_TREE_POMODOROS = 3
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -370,6 +375,38 @@ function TallTree({ x, gy, seed }: { x: number; gy: number; seed: number }) {
   )
 }
 
+function BigTree({ x, gy, seed }: { x: number; gy: number; seed: number }) {
+  const rng = seededRandom(seed)
+  const trunkH = 34 + rng() * 10
+  const trunkW = 7 + rng() * 2
+  const r = 20 + rng() * 6
+  const hue = 95 + rng() * 35
+  const leaf = `hsl(${hue} 38% 38%)`
+  const canopyY = gy - trunkH - r * 0.5
+  return (
+    <g>
+      <ellipse cx={x} cy={gy + 1.5} rx={r * 0.9} ry={3.5} fill="rgba(0,0,0,0.14)" />
+      {/* Trunk, flared at the roots */}
+      <path
+        d={`M ${x - trunkW / 2 - 3} ${gy} Q ${x - trunkW / 2} ${gy - trunkH * 0.45} ${x - trunkW / 2 + 1} ${gy - trunkH} L ${x + trunkW / 2 - 1} ${gy - trunkH} Q ${x + trunkW / 2} ${gy - trunkH * 0.45} ${x + trunkW / 2 + 3} ${gy} Z`}
+        fill="#4E342E"
+      />
+      <path d={`M ${x} ${gy - trunkH * 0.75} L ${x - r * 0.55} ${gy - trunkH - r * 0.15}`} stroke="#4E342E" strokeWidth={2.4} strokeLinecap="round" />
+      <path d={`M ${x} ${gy - trunkH * 0.85} L ${x + r * 0.5} ${gy - trunkH - r * 0.25}`} stroke="#4E342E" strokeWidth={2} strokeLinecap="round" />
+      {/* Canopy */}
+      <circle cx={x - r * 0.55} cy={canopyY + r * 0.2} r={r * 0.62} fill={leaf} />
+      <circle cx={x + r * 0.55} cy={canopyY + r * 0.15} r={r * 0.6} fill={leaf} />
+      <circle cx={x} cy={canopyY - r * 0.25} r={r * 0.78} fill={leaf} />
+      <circle cx={x - r * 0.3} cy={canopyY - r * 0.45} r={r * 0.42} fill={`hsl(${hue} 42% 47%)`} opacity={0.7} />
+      <path
+        d={`M ${x + r * 0.2} ${canopyY - r} A ${r} ${r} 0 0 1 ${x + r * 0.2} ${canopyY + r * 0.75}`}
+        fill={`hsl(${hue} 35% 27%)`}
+        opacity={0.28}
+      />
+    </g>
+  )
+}
+
 // ─── Ground Decorations ──────────────────────────────────
 
 function GrassTuft({ x, y, seed }: { x: number; y: number; seed: number }) {
@@ -423,7 +460,7 @@ function Flower({ x, y, seed }: { x: number; y: number; seed: number }) {
 
 // ─── Main Forest Component ───────────────────────────────
 
-export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
+export function PomodoroForest({ pomodorosCompleted, tasks }: PomodoroForestProps) {
   const { t } = useLocale()
   const svgWidth = 420
   const groundY = 130
@@ -479,6 +516,20 @@ export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
     items.sort((a, b) => a.x - b.x)
     return items
   }, [pomodorosCompleted, forestSeed])
+
+  const bigTreeCount = Math.min(
+    tasks.filter((t) => t.completedPomodoros >= BIG_TREE_POMODOROS).length,
+    8
+  )
+
+  const bigTrees = useMemo(() => {
+    const rng = seededRandom(forestSeed + 4242)
+    const spacing = svgWidth / (bigTreeCount + 1)
+    return Array.from({ length: bigTreeCount }, (_, i) => ({
+      x: spacing * (i + 1) + (rng() * 18 - 9),
+      seed: Math.floor(rng() * 100000),
+    }))
+  }, [bigTreeCount, forestSeed])
 
   const decorations = useMemo(() => {
     const items: { type: "grass" | "rock" | "flower"; x: number; y: number; seed: number }[] = []
@@ -589,6 +640,11 @@ export function PomodoroForest({ pomodorosCompleted }: PomodoroForestProps) {
         if (d.type === "flower") return <Flower key={`dec-${i}`} x={d.x} y={d.y} seed={d.seed} />
         return <SmallRock key={`dec-${i}`} x={d.x} y={d.y} seed={d.seed} />
       })}
+
+      {/* Big trees — one per task with enough pomodoros on it */}
+      {bigTrees.map((t, i) => (
+        <BigTree key={`big-${i}`} x={t.x} gy={groundY} seed={t.seed} />
+      ))}
 
       {/* Trees */}
       {trees.map((t, i) => {
