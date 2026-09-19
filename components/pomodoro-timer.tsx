@@ -16,7 +16,7 @@ interface PomodoroTimerProps {
   elapsedSeconds: number
   setElapsedSeconds: (fn: (prev: number) => number) => void
   settings: PomodoroSettings
-  onPomodoroComplete: () => void
+  onPomodoroComplete: (focusedSeconds: number) => void
   pomodorosCompleted: number
   activeTaskName?: string
 }
@@ -244,7 +244,7 @@ export function PomodoroTimer({
     const isComplete = elapsedSeconds >= getLimitSeconds()
 
     if (mode === "pomodoro" && isComplete) {
-      onPomodoroComplete()
+      onPomodoroComplete(elapsedSeconds)
       if ((pomodorosCompleted + 1) % settings.longBreakInterval === 0) {
         setMode("longBreak")
       } else {

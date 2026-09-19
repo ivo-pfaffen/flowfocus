@@ -99,22 +99,14 @@ function PomodoroContent() {
     saveFocusLog(focusLog)
   }, [focusLog, hydrated])
 
-  // Track time on active task and log focus time per second
+  // Log focus time per second. Task time is credited on completion instead,
+  // so a pomodoro abandoned before the timer runs out costs the task nothing.
   const handleSetElapsed = useCallback(
     (fn: (prev: number) => number) => {
       setElapsedSeconds((prev) => {
         const next = fn(prev)
         const delta = next - prev
         if (delta > 0 && modeRef.current === "pomodoro") {
-          if (activeTaskId) {
-            setTasks((prevTasks) =>
-              prevTasks.map((t) =>
-                t.id === activeTaskId
-                  ? { ...t, totalSecondsSpent: t.totalSecondsSpent + delta }
-                  : t
-              )
-            )
-          }
           setFocusLog((prevLog) => {
             const dayKey = getDayKey(settingsRef.current.dayStartHour)
             const existing = prevLog.find((e) => e.date === dayKey)
@@ -131,21 +123,28 @@ function PomodoroContent() {
         return next
       })
     },
-    [activeTaskId]
+    []
   )
 
-  const handlePomodoroComplete = useCallback(() => {
-    setPomodorosCompleted((prev) => prev + 1)
-    if (activeTaskId) {
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.id === activeTaskId
-            ? { ...t, completedPomodoros: t.completedPomodoros + 1 }
-            : t
+  const handlePomodoroComplete = useCallback(
+    (focusedSeconds: number) => {
+      setPomodorosCompleted((prev) => prev + 1)
+      if (activeTaskId) {
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === activeTaskId
+              ? {
+                  ...t,
+                  completedPomodoros: t.completedPomodoros + 1,
+                  totalSecondsSpent: t.totalSecondsSpent + focusedSeconds,
+                }
+              : t
+          )
         )
-      )
-    }
-  }, [activeTaskId])
+      }
+    },
+    [activeTaskId]
+  )
 
   const handleSaveSettings = useCallback((newSettings: PomodoroSettings) => {
     setSettings(newSettings)
