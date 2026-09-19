@@ -61,6 +61,12 @@ export const spanish = {
   "Pause": "Pausar",
   "Stop": "Terminar",
   "Flowfocus - Pomodoro Timer": "Flowfocus - Temporizador Pomodoro",
+  "Estimated finish": "Fin estimado",
+  "tomorrow": "mañana",
+  "pomodoro left": "pomodoro restante",
+  "pomodoros left": "pomodoros restantes",
+  "of focus": "de concentración",
+  "of breaks": "de descanso",
   "session": "sesión"
 } as const
 

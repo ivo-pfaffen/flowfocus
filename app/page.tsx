@@ -7,6 +7,7 @@ import { SettingsDialog } from "@/components/settings-dialog"
 import { TaskList } from "@/components/task-list"
 import { PomodoroForest } from "@/components/pomodoro-forest"
 import { FocusChart } from "@/components/focus-chart"
+import { FinishEstimate } from "@/components/finish-estimate"
 import type {
   TimerMode,
   Task,
@@ -221,6 +222,15 @@ function PomodoroContent() {
           setTasks={setTasks}
           activeTaskId={activeTaskId}
           setActiveTaskId={setActiveTaskId}
+        />
+
+        {/* Estimated finish for the planned pomodoros */}
+        <FinishEstimate
+          tasks={tasks}
+          settings={settings}
+          pomodorosCompleted={pomodorosCompleted}
+          mode={mode}
+          elapsedSeconds={elapsedSeconds}
         />
 
         {/* Forest */}
