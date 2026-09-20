@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   MoreVertical,
+  GripVertical,
 } from "lucide-react"
 import type { Task, Subtask } from "@/lib/pomodoro-types"
 
@@ -48,6 +49,9 @@ export function TaskList({
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("")
   const [addingSubtaskToId, setAddingSubtaskToId] = useState<string | null>(
+    null
+  )
+  const [draggingSubtaskId, setDraggingSubtaskId] = useState<string | null>(
     null
   )
 
@@ -123,6 +127,21 @@ export function TaskList({
         const allDone =
           updatedSubtasks.length > 0 && updatedSubtasks.every((s) => s.done)
         return { ...t, subtasks: updatedSubtasks, done: allDone }
+      })
+    )
+  }
+
+  const moveSubtask = (taskId: string, fromId: string, toId: string) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t
+        const from = t.subtasks.findIndex((s) => s.id === fromId)
+        const to = t.subtasks.findIndex((s) => s.id === toId)
+        if (from < 0 || to < 0 || from === to) return t
+        const subtasks = [...t.subtasks]
+        const [moved] = subtasks.splice(from, 1)
+        subtasks.splice(to, 0, moved)
+        return { ...t, subtasks }
       })
     )
   }
@@ -364,8 +383,20 @@ export function TaskList({
                     {task.subtasks.map((subtask) => (
                       <div
                         key={subtask.id}
-                        className="flex items-center gap-3 px-3 py-2 rounded-md bg-[hsl(0_0%_100%/0.05)] group/sub"
+                        draggable
+                        onDragStart={() => setDraggingSubtaskId(subtask.id)}
+                        onDragEnd={() => setDraggingSubtaskId(null)}
+                        onDragOver={(e) => {
+                          e.preventDefault()
+                          if (draggingSubtaskId && draggingSubtaskId !== subtask.id) {
+                            moveSubtask(task.id, draggingSubtaskId, subtask.id)
+                          }
+                        }}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md bg-[hsl(0_0%_100%/0.05)] group/sub cursor-grab active:cursor-grabbing ${
+                          draggingSubtaskId === subtask.id ? "opacity-40" : ""
+                        }`}
                       >
+                        <GripVertical className="flex-shrink-0 w-3.5 h-3.5 text-[hsl(0_0%_100%/0.25)] group-hover/sub:text-[hsl(0_0%_100%/0.5)] transition-colors" />
                         <button
                           onClick={() =>
                             handleToggleSubtask(task.id, subtask.id)
